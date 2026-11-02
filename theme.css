@@ -257,3 +257,60 @@ footer button:last-child { margin-left: 0 !important; min-width: 0 !important; }
 .gateway .menu-box { overflow: visible; }
 .gateway .menu-body { max-height: none !important; overflow: visible !important; }
 .gateway .menu-box, .gateway-menu-wrap { height: auto !important; max-height: none !important; min-height: 0 !important; }
+
+/* Bank statement → entries */
+.bk { display: flex; flex-direction: column; gap: 14px; padding: 4px 2px 24px; }
+.bk-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.bk-head h2 { margin: 0 auto 0 0; font-size: 20px; font-weight: 600; }
+.bk-head label { display: flex; align-items: center; gap: 8px; color: var(--fc-muted); font-size: 13px; }
+.bk-head select, .bk-table select { height: 32px; border: 1px solid var(--fc-line); border-radius: 6px; padding: 0 8px; font: inherit; background: #fff; color: var(--fc-ink); max-width: 240px; }
+.bk-file { height: 36px; padding: 0 14px; border: 1px solid var(--fc-line); border-radius: 6px; background: #fff; color: var(--fc-ink) !important; cursor: pointer; }
+.bk-file:focus-within { outline: 2px solid var(--fc-sky); }
+.bk-file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.bk-primary { height: 36px; padding: 0 16px; border: 1px solid var(--fc-navy); border-radius: 6px; background: var(--fc-navy); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.bk-primary:disabled { opacity: .5; cursor: not-allowed; }
+.bk-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.bk-card { background: #fff; border: 1px solid var(--fc-line); border-radius: var(--fc-radius); padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; }
+.bk-card span { font-size: 12.5px; color: var(--fc-muted); }
+.bk-card b { font: 600 19px var(--fc-mono); }
+.bk-blue { color: var(--fc-sky); } .bk-amber { color: #8a5a10; } .bk-mono { font-size: 14px !important; }
+.bk-table { background: #fff; border: 1px solid var(--fc-line); border-radius: var(--fc-radius); overflow-x: auto; }
+.bk-table table { width: 100%; border-collapse: collapse; min-width: 900px; font-variant-numeric: tabular-nums; }
+.bk-table th { text-align: left; font-size: 12.5px; font-weight: 600; color: var(--fc-muted); padding: 9px 12px; border-bottom: 1px solid var(--fc-line); }
+.bk-table td:first-child { white-space: nowrap; }
+.bk-table td { padding: 8px 12px; border-bottom: 1px solid #edf0f5; vertical-align: top; }
+.bk-table th:nth-child(3), .bk-table th:nth-child(4), .bk-amt { text-align: right; font-family: var(--fc-mono); white-space: nowrap; }
+.bk-narr { font: 500 12.5px var(--fc-mono); max-width: 320px; word-break: break-word; }
+.bk-done td { color: var(--fc-muted); }
+.bk-badge { display: inline-block; font-size: 12px; font-weight: 600; border-radius: 10px; padding: 1px 8px; }
+.bk-ok { background: #e3f1ec; color: #16392b; } .bk-new { background: var(--fc-sky-soft); color: var(--fc-navy); } .bk-warn { background: #fbf1de; color: #7a4e0e; }
+.bk-why { color: var(--fc-muted); font-size: 12px; }
+.bk-keep { display: block; margin-top: 4px; font-size: 12px; color: var(--fc-muted); }
+.bk-keep input[type=text], .bk-keep input:not([type]) { height: 22px; border: 1px solid var(--fc-line); border-radius: 4px; padding: 0 4px; font: inherit; }
+.bk-note { margin: 0; color: var(--fc-muted); font-size: 13px; max-width: 900px; }
+
+/* Document inbox */
+.ib-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--fc-line); }
+.ib-tabs button { padding: 8px 12px; border: 0; border-bottom: 3px solid transparent; background: none; font: inherit; color: var(--fc-muted); cursor: pointer; }
+.ib-tabs button[aria-selected=true] { border-bottom-color: var(--fc-navy); color: var(--fc-ink); font-weight: 600; }
+.ib-body { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-start; }
+.ib-list { flex: 1 1 260px; max-width: 340px; margin: 0; padding: 6px; list-style: none; background: #fff; border: 1px solid var(--fc-line); border-radius: var(--fc-radius); max-height: calc(100vh - 230px); overflow: auto; }
+.ib-list button { width: 100%; text-align: left; padding: 8px 10px; border: 0; border-radius: 6px; background: none; font: inherit; color: var(--fc-ink); cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+.ib-list button b { font-weight: 600; word-break: break-all; } .ib-list button span { font-size: 12px; color: var(--fc-muted); }
+.ib-list button[aria-current=true] { background: var(--fc-sky-soft); }
+.ib-view { flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.ib-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ib-acts button:not(.bk-primary) { height: 36px; padding: 0 12px; border: 1px solid var(--fc-line); border-radius: 6px; background: #fff; font: inherit; color: var(--fc-ink); cursor: pointer; }
+.ib-acts kbd { margin-left: 4px; }
+.ib-frame, #inbox-peek { background: #fff; border: 1px solid var(--fc-line); border-radius: var(--fc-radius); overflow: hidden; }
+.ib-frame iframe, .ib-frame img { display: block; width: 100%; height: calc(100vh - 290px); border: 0; object-fit: contain; }
+body.with-peek #screen { margin-right: min(34vw, 480px); }
+body.with-peek.peek-min #screen { margin-right: 0; }
+#inbox-peek { position: fixed; top: 66px; right: 224px; bottom: 42px; width: calc(min(34vw, 480px) - 16px); z-index: 20; display: flex; flex-direction: column; box-shadow: var(--fc-shadow); }
+body.peek-min #inbox-peek { bottom: auto; width: 220px; }
+body.peek-min #inbox-peek iframe, body.peek-min #inbox-peek img { display: none; }
+.ib-peek-head { padding: 8px 12px; border-bottom: 1px solid var(--fc-line); display: flex; align-items: center; gap: 8px; }
+.ib-peek-head > span { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ib-peek-head b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ib-peek-head button { height: 28px; padding: 0 10px; border: 1px solid var(--fc-line); border-radius: 6px; background: #fff; font: inherit; font-size: 12.5px; cursor: pointer; }
+#inbox-peek iframe, #inbox-peek img { flex: 1; width: 100%; border: 0; object-fit: contain; object-position: top; min-height: 0; }

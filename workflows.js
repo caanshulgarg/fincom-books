@@ -223,8 +223,9 @@ function render() {
  if(f.kind!=='voucher')closeVoucherLookup();
  $('#company-title').textContent=state.data.active_company;
  $('#screen').className='';$('#screen').innerHTML='';$('#title').textContent='Home';setKeys(standardKeys());
-  const routes={gateway:renderGateway,menu:renderMenu,masters:renderMasters,master:renderMaster,companyForm:renderCompanyForm,report:renderReport,comparison:renderComparison,ageing:renderAgeing,voucher:renderVoucher,dashboard:renderDashboard,rates_manager:renderItemRatesManager};
+  const routes={gateway:renderGateway,menu:renderMenu,masters:renderMasters,master:renderMaster,companyForm:renderCompanyForm,report:renderReport,comparison:renderComparison,ageing:renderAgeing,voucher:renderVoucher,dashboard:renderDashboard,rates_manager:renderItemRatesManager,...(window.FinComScreens?.routes||{})};
   (routes[f.kind]||renderGateway)(f);
+  window.FinComScreens?.after?.(f);
   if(f.kind==='voucher'&&state.draft?.base==='Receipt')upgradeReceiptVoucher();
   if(f.kind==='voucher')ensureExtraLedgerAddButton();
  if(f.savedForm){$('#screen').innerHTML=f.savedForm;state.draft=clone(f.savedDraft);refreshSelects();}
@@ -448,7 +449,7 @@ const menus={
  'Outstandings':[['Receivables','report','Receivables'],['Payables','report','Payables'],['Ageing','report','Ageing'],['Ledger','chooseLedger']],
  'Inventory Books':[['Stock Summary','report','Stock Summary'],['Stock Item','chooseItem'],['Stock Group Summary','report','Stock Summary'],['Stock Transfers','report','Stock Transfers'],['Physical Stock Register','report','Physical Stock Register']],
  'Statements of Inventory':[['Stock Query','chooseItem'],['Sales Orders','report','Sales Orders'],['Purchase Orders','report','Purchase Orders']],
- 'Banking':[['Bank Reconciliation','chooseBank'],['Cheque Register','report','Cheque Register']],
+ 'Banking':[['Bank Statement → Entries','bankImport'],['Bank Reconciliation','chooseBank'],['Cheque Register','report','Cheque Register']],
  'Statutory Reports':[['GST','menu','GST']],
  'GST':[['GSTR-1','report','GSTR-1'],['GSTR-3B','report','GSTR-3B'],['GST Ledger Summary','report','GST Ledger Summary']],
 };
@@ -788,7 +789,7 @@ async function accept(immediate=false) {
    normalizeDateFields($('#edit-form'));
    if(draft.kind==='voucher'){
     if(await ensureCurrentAllocation())return;
-     payload={company:state.data.active_company,voucher:draft.base==='Receipt'?collectReceiptVoucher():collectVoucher()};
+     payload={company:state.data.active_company,voucher:draft.base==='Receipt'?collectReceiptVoucher():collectVoucher(),inbox_doc:frame().existing?undefined:frame().inboxDoc};
    path=frame().existing?.MASTERID?'/api/alter_voucher':'/api/create_voucher';
   }else{
    const record=Object.fromEntries(new FormData($('#edit-form')));
@@ -809,7 +810,7 @@ async function accept(immediate=false) {
     if(draft.kind==='company')state.period={};
     await refresh();
     if(draft.kind==='company'){state.stack=[{kind:'gateway',cursor:0}];render();}
-    else if(frame().kind==='voucher'&&!frame().existing){render();}
+    else if(frame().kind==='voucher'&&!frame().existing&&!frame().inboxDoc){render();}
     else{
      const parent=state.stack.at(-2),inline=parent?.inlineReturn;
      if(inline){inline.created=payload.record.name;inline.lookup=false;}
@@ -869,7 +870,7 @@ function download(name,content,type='text/plain') {const url=URL.createObjectURL
 async function applyImport() {const payload=importPayload();if(state.dialog.preview!==JSON.stringify(payload))throw Error('Preview the current source before importing');const restore=state.dialog.restore;confirmBox(restore?'Replace all books with this backup?':'Import the previewed data?',async()=>{await api(restore?'/api/restore':'/api/import',payload);state.period={};state.draft=null;state.stack=[{kind:'gateway',cursor:0}];await refresh();render();note('Data saved');});}
 function exportDialog() {const isGstr=(frame().name==='GSTR-1');const gstrBtn=isGstr?'<button class="list-row" data-action="exportGSTR1">JSON - Official GST Portal Format</button>':'';showDialog('Export Data','<div class="list">'+gstrBtn+'<button class="list-row" data-action="exportExcel">Excel (.xlsx / .csv) — current report / ledger / stock</button><button class="list-row" data-action="exportPDF">PDF Document (.pdf) — formatted print</button><button class="list-row" data-action="exportXML">XML — masters and transactions</button><button class="list-row" data-action="bulkTemplates">Master Templates — bulk sheets</button><button class="list-row" data-action="backup">JSON — portable backup</button></div>');}
 function selectRow(index) {const rows=Array.from($('#screen').querySelectorAll('[data-row]'));if(!rows.length)return;index=(index+rows.length)%rows.length;rows.forEach((r,i)=>r.classList.toggle('selected',i===index));frame().cursor=index;}
-async function action(name,args='',element=null) {const d=state.data;const companyRequired=['create','alter','masters','master','report','dashboard','voucher','chooseLedger','chooseGroup','chooseItem','chooseBank'];if(companyRequired.includes(name)&&!requireCompany())return;switch(name){
+async function action(name,args='',element=null) {const d=state.data;const companyRequired=['create','alter','masters','master','report','dashboard','voucher','chooseLedger','chooseGroup','chooseItem','chooseBank'];if(companyRequired.includes(name)&&!requireCompany())return;if(window.FinComScreens?.actions?.[name])return window.FinComScreens.actions[name](args,element);switch(name){
  case 'company':return companyDialog();case 'companyForm':return navigate({kind:'companyForm'});case 'companyAlter':return navigate({kind:'companyForm',edit:true});case 'data':return dataDialog();case 'exchange':return showDialog('Exchange', '<button class="list-row" data-action="import">Import</button><button class="list-row" data-action="export">Export</button>');
    case 'lookupCreate':{const create=state.lookup?.context?.createOptions?.[Number(args)]||state.lookup?.context?.create;return openInlineMaster(state.lookup?.control,true,create);}
    case 'inlineLedger':return openInlineMaster(element?.tagName==='SELECT'?element:element?.closest('td')?.querySelector('select')||$('#edit-form [name="'+(args||'party')+'"]'));

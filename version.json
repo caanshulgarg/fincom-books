@@ -1,9 +1,12 @@
 {
-  "version": "1.2.2",
-  "name": "FinCom Books v1.2.2",
+  "version": "1.3.0",
+  "name": "FinCom Books v1.3.0",
   "release_date": "2026-11-02",
   "min_required_version": "1.0.0",
   "highlights": [
+    "Bank statement → entries: upload an Excel or CSV statement, check the suggested ledger on each line, post them all in one go",
+    "Lines already in the books are spotted and ticked as cleared; ticked \"remember\" lines fill in by themselves next month",
+    "Document inbox: add bills (PDF or photo), enter each one with the bill open beside the voucher; the same bill added twice is caught",
     "New layout: sidebar menu, search bar (Alt+G), card-based screens; all shortcuts unchanged",
     "Company creation: type dates like 1-4-2026; the year end and books-from date fill in automatically",
     "New FinCom look and Home screen",

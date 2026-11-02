@@ -9,6 +9,8 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 import xml.etree.ElementTree as ET
 from books import Books, KINDS, InventoryWarning
+import bank_import
+import inbox
 from interchange import _xml_safe_text, apply_import, preview_import, export_xml, generate_sample_template, bulk_import_masters
 
 ROOT=Path(__file__).parent
@@ -110,7 +112,7 @@ def make_server(port=3543,data_path=None,allow_lan=False):
             body=json.dumps(data,ensure_ascii=False,allow_nan=False).encode('utf-8') if isinstance(data,(dict,list)) else data.encode('utf-8') if isinstance(data,str) else data
             self.send_response(status);self.send_header('Content-Type',content_type);self.send_header('Content-Length',str(len(body)))
             self.send_header('Cache-Control','no-store');self.send_header('X-Content-Type-Options','nosniff')
-            self.send_header('Content-Security-Policy',"default-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'")
+            if not (headers and 'Content-Security-Policy' in headers): self.send_header('Content-Security-Policy',"default-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'")
             if headers:
                 for k,v in headers.items(): self.send_header(k,v)
             self.end_headers();self.wfile.write(body)
@@ -171,6 +173,9 @@ def make_server(port=3543,data_path=None,allow_lan=False):
                         if vpath.exists():
                             return self.send(json.loads(vpath.read_text(encoding='utf-8')))
                         return self.send({'version': APP_VERSION})
+                    if parsed.path=='/api/inbox_file':
+                        data,mime=inbox.read(db,query.get('company') or db.get_active_company_name(),query.get('id',''))
+                        return self.send(data,content_type=mime,headers={'Content-Security-Policy':"default-src 'none'; img-src 'self'; frame-ancestors 'self'",'Content-Disposition':'inline'})
                     if parsed.path=='/api/is_company_locked':
                         company=query.get('company') or db.get_active_company_name()
                         if not company: raise ValueError('Company is required')
@@ -261,7 +266,7 @@ def make_server(port=3543,data_path=None,allow_lan=False):
                         ct='text/csv; charset=utf-8' if fmt.lower()=='csv' else 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                         filename=f"sample_bulk_{tmpl_type}.{fmt.lower()}"
                         return self.send(data,content_type=ct,headers={'Content-Disposition':f'attachment; filename="{filename}"'})
-                paths={'/':'index.html','/fidelity.css':'fidelity.css','/theme.css':'theme.css','/voucher_logic.js':'voucher_logic.js','/date_picker.js':'date_picker.js','/print_view.js':'print_view.js','/lookup_context.js':'lookup_context.js','/workflows.js':'workflows.js','/logo.png':'logo.png','/favicon.ico':'favicon.ico','/app.ico':'app.ico','/manifest.json':'manifest.json'}
+                paths={'/':'index.html','/fidelity.css':'fidelity.css','/theme.css':'theme.css','/voucher_logic.js':'voucher_logic.js','/date_picker.js':'date_picker.js','/print_view.js':'print_view.js','/lookup_context.js':'lookup_context.js','/workflows.js':'workflows.js','/fincom_screens.js':'fincom_screens.js','/logo.png':'logo.png','/favicon.ico':'favicon.ico','/app.ico':'app.ico','/manifest.json':'manifest.json'}
                 if parsed.path not in paths: return self.send({'error':'Not found'},404)
                 file=ROOT/paths[parsed.path]
                 mime=mimetypes.guess_type(str(file))[0] or 'application/octet-stream'
@@ -328,9 +333,11 @@ def make_server(port=3543,data_path=None,allow_lan=False):
                     v=payload['voucher'];v['@ACTION']='Alter' if path.endswith('alter_voucher') else 'Create'
                     if payload.get('override_credit_limit'):
                         v['override_credit_limit'] = True
-                    result={'voucher_id':db.post_voucher(
-                        company, v, payload.get('expected_revision'),
-                        payload.get('allow_inventory_warning', False), payload.get('warning_token'))}
+                    with db.transaction():
+                        result={'voucher_id':db.post_voucher(
+                            company, v, payload.get('expected_revision'),
+                            payload.get('allow_inventory_warning', False), payload.get('warning_token'))}
+                        if payload.get('inbox_doc'): inbox.link(db,company,payload['inbox_doc'],result['voucher_id'])
                 elif path in ('/api/preview_allocations','/api/allocate_bills'):
                     if not company: raise ValueError('Explicit company is required')
                     if 'ledger' not in payload or 'amount' not in payload or 'method' not in payload:
@@ -357,6 +364,21 @@ def make_server(port=3543,data_path=None,allow_lan=False):
                     if not isinstance(record,dict): raise ValueError('Master record is required')
                     if payload.get('operation')=='Create' and record.get('name') in db.get_company(company)[KINDS[kind]]: raise ValueError('Master name already exists')
                     result={'is_new':db.save_master(company,kind,record)}
+                elif path=='/api/inbox_add':
+                    if not company: raise ValueError('Explicit company is required')
+                    result=inbox.add(db,company,payload.get('name'),payload.get('content'))
+                elif path=='/api/inbox_set':
+                    if not company: raise ValueError('Explicit company is required')
+                    result=inbox.set_status(db,company,payload.get('id'),payload.get('status'))
+                elif path=='/api/bank_preview':
+                    if not company: raise ValueError('Explicit company is required')
+                    result=bank_import.preview(db,company,payload.get('bank'),payload.get('filename'),payload.get('content') or '')
+                elif path=='/api/bank_post':
+                    if not company: raise ValueError('Explicit company is required')
+                    result=bank_import.post(db,company,payload.get('bank'),payload.get('rows') or [],payload.get('expected_revision'),payload.get('remember') or [])
+                elif path=='/api/bank_rules':
+                    if not company: raise ValueError('Explicit company is required')
+                    result=bank_import.save_rules(db,company,payload.get('rules') or [])
                 elif path=='/api/bulk_import':
                     if not company: raise ValueError('Explicit company is required')
                     res=bulk_import_masters(db,company,payload.get('type','ledgers'),payload.get('content',''),payload.get('format','csv'))

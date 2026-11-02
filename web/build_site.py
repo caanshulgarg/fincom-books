@@ -10,9 +10,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-APP_FILES = ['fidelity.css', 'theme.css', 'workflows.js', 'voucher_logic.js', 'lookup_context.js', 'print_view.js',
+APP_FILES = ['fidelity.css', 'theme.css', 'workflows.js', 'fincom_screens.js', 'voucher_logic.js', 'lookup_context.js', 'print_view.js',
              'date_picker.js', 'logo.png', 'favicon.ico', 'version.json',
-             'app_server.py', 'books.py', 'billing_rules.py', 'interchange.py']
+             'app_server.py', 'books.py', 'billing_rules.py', 'interchange.py', 'bank_import.py', 'inbox.py']
 PYODIDE_FILES = ['pyodide.js', 'pyodide.asm.mjs', 'pyodide.asm.wasm', 'python_stdlib.zip', 'pyodide-lock.json']
 
 
