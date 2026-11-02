@@ -1,9 +1,10 @@
 {
-  "version": "1.2.1",
-  "name": "FinCom Books v1.2.1",
+  "version": "1.2.2",
+  "name": "FinCom Books v1.2.2",
   "release_date": "2026-11-02",
   "min_required_version": "1.0.0",
   "highlights": [
+    "New layout: sidebar menu, search bar (Alt+G), card-based screens; all shortcuts unchanged",
     "Company creation: type dates like 1-4-2026; the year end and books-from date fill in automatically",
     "New FinCom look and Home screen",
     "Balance Sheet shows true figures instead of a balancing plug",

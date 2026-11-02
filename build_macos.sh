@@ -34,7 +34,7 @@ rm -rf "$DIST_DIR/build"
 # 3. Bundle Assets & Launcher
 echo "[3/4] Packaging frontend assets, icon, and launcher..."
 # The server serves files from its own folder, so the frontend sits next to app_server, not in Resources.
-cp index.html fidelity.css workflows.js voucher_logic.js lookup_context.js print_view.js date_picker.js "$MACOS_BIN/"
+cp index.html fidelity.css theme.css workflows.js voucher_logic.js lookup_context.js print_view.js date_picker.js "$MACOS_BIN/"
 cp logo.png favicon.ico manifest.json version.json LICENSE "$MACOS_BIN/"
 if [ -f "app.icns" ]; then
     cp app.icns "$RESOURCES/app.icns"

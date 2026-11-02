@@ -38,6 +38,7 @@ $CoreFiles = @(
     "interchange.py",
     "index.html",
     "fidelity.css",
+    "theme.css",
     "workflows.js",
     "voucher_logic.js",
     "lookup_context.js",
@@ -81,7 +82,7 @@ $HasNative = (Test-Path (Join-Path $NativeDist "app_server.exe")) -and (-not $Sk
 if ($HasNative) {
     Write-Host "`n[NATIVE COMPILATION] Packaging compiled C machine code binary (Zero Python source files)..." -ForegroundColor Cyan
     Copy-Item -Path "$NativeDist\*" -Destination $AppStage -Recurse -Force
-    $FrontendFiles = @("index.html", "fidelity.css", "workflows.js", "voucher_logic.js", "lookup_context.js", "print_view.js", "date_picker.js", "logo.png", "favicon.ico", "app.ico", "manifest.json", "version.json", "LICENSE")
+    $FrontendFiles = @("index.html", "fidelity.css", "theme.css", "workflows.js", "voucher_logic.js", "lookup_context.js", "print_view.js", "date_picker.js", "logo.png", "favicon.ico", "app.ico", "manifest.json", "version.json", "LICENSE")
     foreach ($file in $FrontendFiles) {
         Copy-Item -Path (Join-Path $AppRoot $file) -Destination $AppStage -Force
     }

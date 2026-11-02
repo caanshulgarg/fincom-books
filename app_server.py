@@ -261,7 +261,7 @@ def make_server(port=3543,data_path=None,allow_lan=False):
                         ct='text/csv; charset=utf-8' if fmt.lower()=='csv' else 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                         filename=f"sample_bulk_{tmpl_type}.{fmt.lower()}"
                         return self.send(data,content_type=ct,headers={'Content-Disposition':f'attachment; filename="{filename}"'})
-                paths={'/':'index.html','/fidelity.css':'fidelity.css','/voucher_logic.js':'voucher_logic.js','/date_picker.js':'date_picker.js','/print_view.js':'print_view.js','/lookup_context.js':'lookup_context.js','/workflows.js':'workflows.js','/logo.png':'logo.png','/favicon.ico':'favicon.ico','/app.ico':'app.ico','/manifest.json':'manifest.json'}
+                paths={'/':'index.html','/fidelity.css':'fidelity.css','/theme.css':'theme.css','/voucher_logic.js':'voucher_logic.js','/date_picker.js':'date_picker.js','/print_view.js':'print_view.js','/lookup_context.js':'lookup_context.js','/workflows.js':'workflows.js','/logo.png':'logo.png','/favicon.ico':'favicon.ico','/app.ico':'app.ico','/manifest.json':'manifest.json'}
                 if parsed.path not in paths: return self.send({'error':'Not found'},404)
                 file=ROOT/paths[parsed.path]
                 mime=mimetypes.guess_type(str(file))[0] or 'application/octet-stream'
