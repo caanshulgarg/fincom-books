@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FinCom Books</title>
+<meta name="description" content="Free, offline, keyboard-driven accounting with function-key shortcuts, GST returns and inventory. Use it in your browser or install it on Windows and Mac.">
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one column, a ruled "ledger" band behind the hero, keycaps as the signature detail. */
+:root {
+  --ink: #0e2a5c;
+  --ink-soft: #3d5478;
+  --paper: #f5f8fc;
+  --surface: #ffffff;
+  --rule: #d6e1ef;
+  --accent: #0a84c6;
+  --accent-ink: #ffffff;
+  --cap: #e9eff7;
+  --cap-edge: #b9c8dc;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --ink: #e6eefb; --ink-soft: #a9bad6; --paper: #0b1526; --surface: #12203a; --rule: #22355a; --accent: #4cb8f0; --accent-ink: #06121f; --cap: #1a2c4d; --cap-edge: #2f4775; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --ink: #e6eefb; --ink-soft: #a9bad6; --paper: #0b1526; --surface: #12203a; --rule: #22355a; --accent: #4cb8f0; --accent-ink: #06121f; --cap: #1a2c4d; --cap-edge: #2f4775; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 17px/1.6 var(--body); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+header.top { display: flex; align-items: center; gap: 12px; padding-block: 20px; }
+header.top img { width: 40px; height: 40px; border-radius: 10px; }
+header.top strong { font: 800 20px/1 var(--display); letter-spacing: .01em; }
+header.top nav { margin-left: auto; display: flex; gap: 20px; font-size: 15px; }
+header.top nav a { color: var(--ink-soft); text-decoration: none; }
+header.top nav a:hover { color: var(--ink); }
+
+.hero { background: repeating-linear-gradient(to bottom, transparent 0 35px, var(--rule) 35px 36px); border-block: 1px solid var(--rule); }
+.hero .wrap { padding-block: 56px 48px; display: grid; gap: 28px; }
+h1 { font: 800 clamp(36px, 6vw, 64px)/1.05 var(--display); margin: 0; letter-spacing: -.02em; text-wrap: balance; max-width: 16ch; }
+.lede { font-size: 19px; color: var(--ink-soft); max-width: 58ch; margin: 0; }
+.keys { display: flex; flex-wrap: wrap; gap: 10px; }
+.key { display: inline-flex; align-items: baseline; gap: 8px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 6px 12px 6px 6px; font-size: 14px; color: var(--ink-soft); }
+kbd { font: 500 13px/1 var(--mono); color: var(--ink); background: var(--cap); border: 1px solid var(--cap-edge); border-bottom-width: 3px; border-radius: 6px; padding: 5px 7px; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; flex-direction: column; justify-content: center; min-height: 56px; padding: 8px 20px; border-radius: 10px; text-decoration: none; font-weight: 600; border: 1px solid var(--ink); color: var(--ink); background: var(--surface); }
+.btn small { font-weight: 400; font-size: 13px; color: var(--ink-soft); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary small { color: inherit; opacity: .85; }
+.btn:hover { transform: translateY(-1px); }
+@media (prefers-reduced-motion: reduce) { .btn:hover { transform: none; } }
+
+.shot { margin: 0; border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--surface); box-shadow: 0 18px 40px -24px rgba(14, 42, 92, .45); }
+.shot img { display: block; width: 100%; height: auto; }
+
+section { padding-block: 56px 8px; }
+h2 { font: 800 30px/1.15 var(--display); margin: 0 0 20px; letter-spacing: -.01em; text-wrap: balance; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px 32px; }
+.grid h3 { font: 600 17px/1.3 var(--body); margin: 0 0 4px; }
+.grid p { margin: 0; color: var(--ink-soft); font-size: 15.5px; }
+
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 20px 22px; min-width: 0; }
+.panel h3 { margin: 0 0 10px; font: 600 18px/1.3 var(--body); }
+.panel ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15.5px; }
+.note { font-size: 14.5px; color: var(--ink-soft); margin: 12px 0 0; }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 12px; background: var(--surface); }
+table.cmp { width: 100%; border-collapse: collapse; font-size: 15px; }
+table.cmp th, table.cmp td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--rule); }
+table.cmp tr:last-child td { border-bottom: 0; }
+table.cmp th { font-weight: 600; }
+.soon { color: var(--ink-soft); }
+
+footer { padding-block: 48px 40px; color: var(--ink-soft); font-size: 14px; }
+@media (max-width: 560px) { header.top nav { display: none; } .hero .wrap { padding-block: 36px 32px; } }
+</style>
+</head>
+<body>
+<header class="wrap top">
+  <img src="logo.png" alt="">
+  <strong>FinCom Books</strong>
+  <nav aria-label="Page"><a href="#download">Download</a><a href="#features">Features</a><a href="#install">Install help</a></nav>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="wrap">
+      <h1>Keyboard-first accounting that runs anywhere</h1>
+      <p class="lede">Post vouchers in seconds from the keyboard, file GSTR-1 and GSTR-3B, and keep stock. Free, works offline, and your books stay on your own computer.</p>
+      <div class="keys" aria-label="Voucher shortcuts">
+        <span class="key"><kbd>F4</kbd>Contra</span>
+        <span class="key"><kbd>F5</kbd>Payment</span>
+        <span class="key"><kbd>F6</kbd>Receipt</span>
+        <span class="key"><kbd>F7</kbd>Journal</span>
+        <span class="key"><kbd>F8</kbd>Sales</span>
+        <span class="key"><kbd>F9</kbd>Purchase</span>
+        <span class="key"><kbd>Ctrl</kbd><kbd>A</kbd>Accept</span>
+      </div>
+      <div class="actions" id="download">
+        <a class="btn primary" href="app/">Open in your browser<small>Nothing to install</small></a>
+        <a class="btn" href="https://github.com/caanshulgarg/fincom-books/releases/latest/download/FinComBooksSetup.exe">Download for Windows<small>Windows 10 and 11, 64-bit</small></a>
+        <a class="btn" href="https://github.com/caanshulgarg/fincom-books/releases/latest/download/FinComBooksSetup.dmg">Download for Mac<small>Apple Silicon (M1 and later)</small></a>
+        <a class="btn" href="https://github.com/caanshulgarg/fincom-books/releases/latest/download/FinComBooks_Portable.zip">Windows portable ZIP<small>Runs from a folder or USB drive</small></a>
+      </div>
+      <figure class="shot"><img src="voucher.jpg" width="1366" height="800" alt="A payment voucher in FinCom Books: bank, party and amount fields with a narration, and Debit and Credit totals of 25,000.00"></figure>
+    </div>
+  </div>
+
+  <section class="wrap" id="features">
+    <h2>What you can do today</h2>
+    <div class="grid">
+      <div><h3>Vouchers and masters</h3><p>Contra, Payment, Receipt, Journal, Sales, Purchase, Credit and Debit Notes. Create a ledger inline with <kbd>Alt</kbd>+<kbd>C</kbd>, jump anywhere with <kbd>Alt</kbd>+<kbd>G</kbd>.</p></div>
+      <div><h3>GST</h3><p>CGST and SGST or IGST by place of supply. GSTR-1 (B2B, B2CL, B2CS, HSN) and GSTR-3B with JSON for the GST portal.</p></div>
+      <div><h3>Inventory</h3><p>Stock items, godowns, batches, weighted-average valuation, bill of materials and manufacturing.</p></div>
+      <div><h3>Banking and bills</h3><p>Bank reconciliation with clearing dates, bill-wise receivables and payables, credit limits.</p></div>
+      <div><h3>Reports</h3><p>Two-sided Balance Sheet and Profit &amp; Loss A/c, Trial Balance, Day Book, ledgers, Stock Summary, ratios.</p></div>
+      <div><h3>Your data, your formats</h3><p>Import from Tally XML, bulk-load masters from Excel, back up to a file, and lock a company with a PIN.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2>Coming next</h2>
+    <div class="table-wrap">
+      <table class="cmp">
+        <thead><tr><th scope="col">Feature</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          <tr><td>Audit trail (edit log) for companies</td><td class="soon">Next</td></tr>
+          <tr><td>TDS and TCS</td><td class="soon">Planned</td></tr>
+          <tr><td>e-Invoice (IRN) and e-Way Bill</td><td class="soon">Planned</td></tr>
+          <tr><td>Logins for multiple users</td><td class="soon">Planned</td></tr>
+          <tr><td>Cloud sync and access for your CA</td><td class="soon">Planned</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="wrap" id="install">
+    <h2>Install help</h2>
+    <div class="steps">
+      <div class="panel">
+        <h3>Browser</h3>
+        <ol>
+          <li>Click <strong>Open in your browser</strong>. The first start takes a few seconds.</li>
+          <li>Press <kbd>Alt</kbd>+<kbd>K</kbd> to create your company.</li>
+          <li>Your books are saved in this browser on this computer. Take a backup from <kbd>Alt</kbd>+<kbd>Y</kbd> → Backup.</li>
+        </ol>
+      </div>
+      <div class="panel">
+        <h3>Windows</h3>
+        <ol>
+          <li>Run <strong>FinComBooksSetup.exe</strong>.</li>
+          <li>If Windows shows "Windows protected your PC", click <strong>More info</strong>, then <strong>Run anyway</strong>. The installer is not code-signed yet.</li>
+          <li>Open FinCom Books from the desktop shortcut.</li>
+        </ol>
+      </div>
+      <div class="panel">
+        <h3>Mac</h3>
+        <ol>
+          <li>Open <strong>FinComBooksSetup.dmg</strong> and drag FinCom Books to Applications.</li>
+          <li>The first time, right-click the app and choose <strong>Open</strong>. On macOS 15, use System Settings → Privacy &amp; Security → <strong>Open Anyway</strong>.</li>
+          <li>Google Chrome or Microsoft Edge gives the best app window.</li>
+        </ol>
+      </div>
+    </div>
+    <p class="note">The browser version and the desktop apps keep separate books. Move a company between them with Backup and Restore.</p>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p>© 2026 FinCom India. <a href="LICENSE.txt">Licence</a> · <a href="https://github.com/caanshulgarg/fincom-books">Source code</a></p>
+  <p>Tally and TallyPrime are trademarks of Tally Solutions Pvt. Ltd. FinCom Books is not affiliated with or endorsed by Tally Solutions.</p>
+</footer>
+</body>
+</html>

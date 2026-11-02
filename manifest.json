@@ -1,0 +1,24 @@
+{
+  "name": "FinCom Books",
+  "short_name": "FinCom Books",
+  "description": "Financial & Inventory Accounting System",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d131b",
+  "theme_color": "#1b2c43",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 24x24 32x32 48x48 64x64 128x128 256x256",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ]
+}

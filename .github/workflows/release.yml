@@ -1,0 +1,62 @@
+name: Release
+# Bumping "version" in version.json on main builds the Windows installer, portable ZIP and
+# macOS DMG and publishes them as GitHub Release v<version> (the tag is created here).
+on:
+  push:
+    branches: [main]
+    paths: [version.json, .github/workflows/release.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install nuitka openpyxl pytest playwright
+      - run: python -m pytest -q -k "not browser"
+      - name: Compile server
+        run: python -m nuitka --standalone --assume-yes-for-downloads --mingw64 --output-dir=nuitka_dist --output-filename=app_server.exe --windows-console-mode=disable app_server.py
+      - run: choco install nsis -y --no-progress
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $env:Path = "C:\Program Files (x86)\NSIS;" + $env:Path
+          ./build_installer.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            dist/FinComBooksSetup.exe
+            dist/FinComBooks_Portable.zip
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install nuitka openpyxl pytest playwright
+      - run: bash build_macos.sh
+      - uses: actions/upload-artifact@v4
+        with: { name: macos, path: dist_mac/FinComBooksSetup.dmg }
+  publish:
+    needs: [windows, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        run: echo "tag=v$(python3 -c "import json;print(json.load(open('version.json'))['version'])")" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        with: { path: out, merge-multiple: true }
+      - run: cd out && sha256sum * > SHA256SUMS.txt
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: FinCom Books ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          files: out/*
+          generate_release_notes: true

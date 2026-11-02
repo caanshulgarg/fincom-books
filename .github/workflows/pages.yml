@@ -1,0 +1,31 @@
+name: Website
+# Builds the landing page and the browser edition (Python running in the page via Pyodide)
+# and publishes them to GitHub Pages on every push to the default branch.
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch Pyodide
+        run: |
+          npm pack pyodide@314.0.7 --silent
+          mkdir pyodide && tar xzf pyodide-314.0.7.tgz -C pyodide
+      - run: python3 web/build_site.py pyodide/package _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+      - id: deployment
+        uses: actions/deploy-pages@v4

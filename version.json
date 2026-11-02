@@ -1,0 +1,18 @@
+{
+  "version": "1.2.1",
+  "name": "FinCom Books v1.2.1",
+  "release_date": "2026-11-02",
+  "min_required_version": "1.0.0",
+  "highlights": [
+    "Company creation: type dates like 1-4-2026; the year end and books-from date fill in automatically",
+    "New FinCom look and Home screen",
+    "Balance Sheet shows true figures instead of a balancing plug",
+    "Official GSTR-1 (B2B, B2CL, B2CS, HSN) and GSTR-3B with 1-click JSON export for GST Portal",
+    "Bank Reconciliation Statement (BRS) with clear-date tracking and automated reconciliation",
+    "Credit Control & Period Locking (Debtor credit limits, overdue checks, and period lock)",
+    "Cost Centres & Cost Categories allocation tracking in vouchers",
+    "Manufacturing & Bill of Materials (BOM) multi-godown component tracking",
+    "Company PIN Lock & Master Password for data privacy"
+  ],
+  "download_url": "https://github.com/caanshulgarg/fincom-books/releases/latest"
+}
