@@ -4,7 +4,7 @@
 
 <pyodide-package-dir> is the unpacked npm package (e.g. `npm pack pyodide@314.0.7`, then extract).
 """
-import re
+import json, re, time
 import shutil
 import sys
 from pathlib import Path
@@ -31,8 +31,11 @@ def build(pyodide_dir: Path, out: Path):
     # The site is served from a sub-path (GitHub Pages), so root-relative asset links become relative.
     page = (ROOT / 'index.html').read_text(encoding='utf-8')
     page = re.sub(r'(src|href)="/(?!/)', r'\1="./', page)
+    # a new release must not run against last release's scripts left in the browser cache
+    ver = json.loads((ROOT / 'version.json').read_text(encoding='utf-8'))['version'] + '-' + str(int(time.time()))
+    page = re.sub(r'(src|href)="\./([^"?]+\.(?:js|css))"', r'\1="./\2?v=' + ver + '"', page)
     first_script = page.index('<script src=')
-    page = page[:first_script] + '<script src="./pyodide/pyodide.js"></script><script src="./web_boot.js"></script>' + page[first_script:]
+    page = page[:first_script] + '<script src="./pyodide/pyodide.js"></script><script src="./web_boot.js?v=' + ver + '"></script>' + page[first_script:]
     (app / 'index.html').write_text(page, encoding='utf-8')
     manifest = (ROOT / 'manifest.json').read_text(encoding='utf-8').replace('"/', '"./')
     (app / 'manifest.json').write_text(manifest, encoding='utf-8')
