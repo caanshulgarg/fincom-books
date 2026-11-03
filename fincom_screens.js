@@ -78,7 +78,10 @@ const INBOX_TYPES=[['Purchase','F9'],['Payment','F5'],['Journal','F7'],['Sales',
 const docs=()=>state.data.company_meta?.inbox||[];
 const fileUrl=d=>`/api/inbox_file?company=${encodeURIComponent(state.data.active_company)}&id=${encodeURIComponent(d.id)}`;
 const kb=n=>n>1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';
-const viewer=d=>d.ext==='.pdf'?`<iframe src="${fileUrl(d)}" title="${esc(d.name)}"></iframe>`:`<img src="${fileUrl(d)}" alt="${esc(d.name)}">`;
+// the web edition answers /api in fetch only, so its files are shown from a blob link
+const src=d=>window.FinComWebEdition?'':fileUrl(d);
+const viewer=d=>d.ext==='.pdf'?`<iframe src="${src(d)}" data-doc="${esc(d.id)}" title="${esc(d.name)}"></iframe>`:`<img src="${src(d)}" data-doc="${esc(d.id)}" alt="${esc(d.name)}">`;
+async function hydrate(){if(!window.FinComWebEdition)return;for(const el of document.querySelectorAll('[data-doc]:not([data-ready])')){el.dataset.ready='1';const d=docs().find(x=>x.id===el.dataset.doc);if(d)el.src=URL.createObjectURL(await (await fetch(fileUrl(d))).blob());}}
 function renderInbox(f){
  $('#title').textContent='Document inbox';
  f.tab=f.tab||'waiting';
@@ -95,7 +98,7 @@ function renderInbox(f){
  ${all.length?'':'<p class="bk-note">Drop purchase bills, expense bills and sales copies here (or use Add bills). Each one opens beside the voucher while you enter it, and is marked entered with the voucher number once saved. The same file added twice is caught.</p>'}
  <div class="ib-body"><ul class="ib-list" aria-label="Documents">${list.map(d=>`<li><button type="button" data-action="inboxPick" data-args="${esc(d.id)}" aria-current="${d.id===f.sel}"><b>${esc(d.name)}</b><span>${esc(String(d.received).slice(0,10))} · ${kb(d.size)}${d.voucher?' · '+esc(d.voucher):''}</span></button></li>`).join('')||'<li class="bk-note">Nothing here.</li>'}</ul>
  ${cur?`<section class="ib-view"><div class="ib-acts">${acts}</div><div class="ib-frame">${viewer(cur)}</div></section>`:''}</div></div>`;
- setKeys([['Esc','Back','back'],['F3','Company','company'],...(cur?.status==='waiting'?['gap',...INBOX_TYPES.map(([t,k])=>[k,t,'inboxEnter',t])]:[])]);
+hydrate(); setKeys([['Esc','Back','back'],['F3','Company','company'],...(cur?.status==='waiting'?['gap',...INBOX_TYPES.map(([t,k])=>[k,t,'inboxEnter',t])]:[])]);
 }
 async function addFiles(fileList){
  let added=0,dups=[];
@@ -113,7 +116,7 @@ function peek(f){
  if(!d){el?.remove();document.body.classList.remove('peek-min');return;}
  if(el?.dataset.id===d.id)return;
  el?.remove();
- document.body.insertAdjacentHTML('beforeend',`<aside id="inbox-peek" data-id="${esc(d.id)}" aria-label="Bill being entered"><div class="ib-peek-head"><span><b title="${esc(d.name)}">${esc(d.name)}</b><span class="bk-why">the saved voucher is linked to this bill</span></span><button type="button" data-action="peekToggle">Hide bill</button></div>${viewer(d)}</aside>`);
+ document.body.insertAdjacentHTML('beforeend',`<aside id="inbox-peek" data-id="${esc(d.id)}" aria-label="Bill being entered"><div class="ib-peek-head"><span><b title="${esc(d.name)}">${esc(d.name)}</b><span class="bk-why">the saved voucher is linked to this bill</span></span><button type="button" data-action="peekToggle">Hide bill</button></div>${viewer(d)}</aside>`);hydrate();
 }
 document.addEventListener('change',async e=>{if(frame()?.kind==='inbox'&&e.target.name==='ib-file'&&e.target.files.length){try{await addFiles([...e.target.files]);}catch(err){errorBox(err.message);}}});
 document.addEventListener('dragover',e=>{if(frame()?.kind==='inbox')e.preventDefault();});

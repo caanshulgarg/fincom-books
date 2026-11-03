@@ -2,7 +2,8 @@
 // and answer the app's /api calls locally. Must load before workflows.js.
 (function () {
   const realFetch = window.fetch.bind(window);
-  const sources = ['app_server.py', 'books.py', 'billing_rules.py', 'interchange.py', 'version.json', 'web_bridge.py'];
+  const sources = ['app_server.py', 'books.py', 'billing_rules.py', 'interchange.py', 'bank_import.py', 'inbox.py', 'version.json', 'web_bridge.py'];
+  window.FinComWebEdition = true;
   const splash = document.createElement('div');
   splash.id = 'web-boot';
   splash.setAttribute('role', 'status');

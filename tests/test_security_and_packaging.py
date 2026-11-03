@@ -156,3 +156,18 @@ def test_balance_sheet_debit_liability_reduces_its_side_instead_of_a_fake_plug(a
     after, totals = opening_diff()
     assert after == '72,000.00', after
     assert totals[0].split()[-1] == totals[1].split()[-1]
+
+
+def test_web_edition_loads_every_python_module_the_server_imports():
+    import re
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    local = {p.stem for p in root.glob('*.py')}
+    needed = set()
+    for name in ('app_server', 'books', 'interchange', 'bank_import', 'inbox', 'billing_rules'):
+        needed |= {m for m in re.findall(r'^\s*(?:from|import)\s+(\w+)', (root / f'{name}.py').read_text(), re.M) if m in local}
+    boot = (root / 'web' / 'web_boot.js').read_text()
+    site = (root / 'web' / 'build_site.py').read_text()
+    for m in needed:
+        assert f"'{m}.py'" in boot, f'web_boot.js does not load {m}.py'
+        assert f"'{m}.py'" in site, f'build_site.py does not copy {m}.py'
